@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from gi.repository import Gtk, GLib
-from communicator import CommThread, ClientCommand, ServerReply
+from communicator import CommThread, ClientCommand, ServerReply, Reciever, ClientFac
 import Queue
 import threading
 
@@ -24,11 +24,13 @@ class TISCaPClient:
         
         #Connecting to teh server
 
-        self.communicator = CommThread()
-        self.communicator.start()
+        #self.communicator = CommThread()
+        #self.communicator.start()
         
+        reactor.connectTCP('localhost', 4020, ClientFac())
+        reactor.run()
 
-        GLib.timeout_add(100, self.check_queues)
+        #GLib.timeout_add(100, self.check_queues)
 
 
         Gtk.main() 

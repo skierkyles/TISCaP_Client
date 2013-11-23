@@ -111,12 +111,28 @@ class CommThread(threading.Thread):
 #USE TWISTED FOR THIS!
 
 from twisted.internet import protocol, reactor
+from twisted.internet.protocol import ClientFactory
 
-class Client(protocol.Protocol):
+class Reciever(protocol.Protocol):
     def dataReceived(self, data):
+        print data
         
+    def send(self):
+        self.transport.write("/login jimbobaaa\r\n")
 
+class ClientFac(ClientFactory):
+    def startedConnecting(self, connector):
+        print 'Connecting'
 
+    def buildProtocol(self, addr):
+        print 'Connected.'
+        return Reciever()
+
+    def clientConnectionLost(self, connector, reason):
+        print reason
+
+    def clientConnectionFailed(self, connector, reason):
+        print reason
 
 
 
