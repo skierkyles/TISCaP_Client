@@ -1,10 +1,13 @@
 #!/usr/bin/python
 from gi.repository import Gtk, GLib
-from communicator import CommThread, ClientCommand, ServerReply, Reciever, ClientFac
+#from communicator import CommThread, ClientCommand, ServerReply, Reciever, ClientFac
+from communicator import ClientFac
 import Queue
 import threading
 
-from twisted.internet import protocol, reactor
+from twisted.internet import protocol, gtk3reactor
+gtk3reactor.install()
+from twisted.internet import reactor
 
 class TISCaPClient:
     def __init__(self):
@@ -27,13 +30,16 @@ class TISCaPClient:
         #self.communicator = CommThread()
         #self.communicator.start()
         
-        reactor.connectTCP('localhost', 4020, ClientFac())
+        self.cf = ClientFac(self, self.twisted_callback)
+        
+        reactor.connectTCP("127.0.0.1", 4020, self.cf)
         reactor.run()
-
+        
+        
         #GLib.timeout_add(100, self.check_queues)
-
-
-        Gtk.main() 
+        
+        
+        #Gtk.main() 
         
 
     def setup_ui(self):
@@ -50,28 +56,16 @@ class TISCaPClient:
         
     def quit(self, something, something_else):
         self.logged_in = False
-        Gtk.main_quit()
+        #Gtk.main_quit()
+        reactor.stop()
         
     def check_queues(self):
-        #if (self.logged_in):
-            #self.communicator.cmd_q.put(ClientCommand(ClientCommand.RECEIVE))
-        
-        try: 
-            reply = self.communicator.reply_q.get(block=False)
-            if reply.type == ServerReply.SUCCESS:
-                print reply.data
-        except Queue.Empty:
-            pass
-        
-        if self.logged_in and self.communicator.reply_q.empty():
-                print "Just happened"
-                print self.communicator.cmd_q
-                self.communicator.cmd_q.put(ClientCommand(ClientCommand.RECEIVE))
         
         #Need to return true to keep the timer going.
         return True
         
     def update_users_list(self):
+        self.cf.instance.login("KYLE!")
         pass
         
     def refresh_users_click(self, button):
@@ -101,10 +95,18 @@ class TISCaPClient:
         if server == "":
             server = "127.0.0.1"
         
-        self.communicator.cmd_q.put(ClientCommand(ClientCommand.CONNECT, ("127.0.0.1", 4020)))
-        self.communicator.cmd_q.put(ClientCommand(ClientCommand.SEND, "/login " + uname + "\r\n"))
         
+        self.cf.uname = uname
+        reactor.connectTCP(server, 4020, self.cf)
         self.logged_in = True
+        
+    def twisted_callback(self, d):
+        mt = self.builder.get_object("message_text")
+        buff = Gtk.TextBuffer()
+        mt.set_buffer(buff)
+        buff.set_text(d)
+        
+        print d
     
 class LoginDialog(Gtk.Dialog):
     def __init__(self, parent, content, uname, server):
