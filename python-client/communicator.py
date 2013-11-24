@@ -1,4 +1,6 @@
 #Twisted is a lot. - Kyle
+#A great help with twisted:
+#http://krondo.com/blog/?p=1595
 
 from twisted.internet import protocol, gireactor
 
