@@ -17,26 +17,41 @@ class TISCapProtocol(protocol.Protocol):
         pass
     
     def dataReceived(self, data):
-        #self.factory.reply_q.put(data)
-        self.factory.msgReceived(data)
-        #self.errorReceived("ASDF")
+        #print "Data Received: " + data
+        
+        if (len(data) == 0):
+            return
+        
+        t = data.split(" ")
+        msg_type = t[0].lower()
+        msg_type = msg_type[1:]
+        
+        
+        if (msg_type == "activeusers"):
+            self.userListReceived(data)
+        if (msg_type == "public"):
+            self.messageReceived(data)
+        else: 
+            print "No case for this..."
+            print data
+
         
     def login(self, uname):
-        self.transport.write("/login " + uname + "\r\n")
+        self.transport.writeSomeData("/login " + uname + "\r\n")
+        
+    def users(self):
+        self.transport.writeSomeData("/users\r\n")
         
     def sendMessage(self, message):
-        #print dir(self.transport)
-        print "Sending: " + str(message)
         self.transport.writeSomeData("/public\r\n" + message)
         
     def userListReceived(self, usr):
-        pass
+        self.factory.userListReceived(usr)
         
     def messageReceived(self, msg):
-        pass
+        self.factory.msgReceived(msg)
         
     def errorReceived(self, err):
-        #print dir(self)
         pass
       
 
@@ -47,6 +62,7 @@ class ClientFac(protocol.ClientFactory):
         self.protocol = TISCapProtocol
         self.instance = None
         self.received_cb = rcv
+        self.user_cb = usr
     
     def startedConnecting(self, connector):
         print 'Connecting'
@@ -65,8 +81,25 @@ class ClientFac(protocol.ClientFactory):
         print reason
         
     def msgReceived(self, data):
-        self.received_cb(data)
+        #Parse the data down to a nice user and message.
+        trimed = data[7:]
+        (uname, sep, data) = trimed.partition("\r\n")
+        
+        uname = uname.strip()
+        
+        self.received_cb(uname, data)
 
+    def userListReceived(self, data):
+        #Parse the data down to a nice python like list.
+        
+        #Remove the activeusers part.
+        trimed = data[12:].strip()
+        #Now remove the brackets,
+        trimed = trimed[1:-1]
+        
+        users = trimed.split(",")
+                
+        self.user_cb(users)
 
 
 

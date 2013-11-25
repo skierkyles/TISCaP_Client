@@ -15,6 +15,11 @@ class TISCaPClient:
         
         self.builder = None
         self.window = None
+        
+        #This should be eliminated
+        self.o_c_tag = None
+        self.m_c_tag = None
+        #End elimination...
     
     def start(self): 
         self.logged_in = False
@@ -29,7 +34,7 @@ class TISCaPClient:
         #self.communicator = CommThread()
         #self.communicator.start()
         
-        self.cf = ClientFac(self.twisted_callback, None, None)
+        self.cf = ClientFac(self.msg_rcvd_callback, self.user_list_callback, None)
         
         #reactor.connectTCP("127.0.0.1", 4020, self.cf)
         reactor.run()
@@ -45,6 +50,8 @@ class TISCaPClient:
         self.window = self.builder.get_object("main_window")
         self.window.connect("delete-event", self.quit)
         
+        self.user_model = self.builder.get_object("user_store")
+        
         login_btn = self.builder.get_object("login_btn")
         login_btn.connect("clicked", self.login_btn_click)
         
@@ -59,6 +66,9 @@ class TISCaPClient:
     def quit(self, something, something_else):
         self.logged_in = False
         #Gtk.main_quit()
+        if (self.cf.instance != None):
+            self.cf.instance.transport.loseConnection()
+        
         reactor.stop()
         
     def send_btn_clicked(self, btn):
@@ -67,14 +77,11 @@ class TISCaPClient:
     def send_message(self):
         send_entry = self.builder.get_object("send_entry")
         txt = send_entry.get_text()
+        send_entry.set_text("")
         self.cf.instance.sendMessage(txt)
         
-    def update_users_list(self):
-        self.cf.instance.login("KYLE!")
-        pass
-        
     def refresh_users_click(self, button):
-        self.update_users_list()
+        self.cf.instance.users()
         
     def login_btn_click(self, button):
         self.show_login_dialog()
@@ -114,13 +121,42 @@ class TISCaPClient:
         
         reactor.callLater(1, self.try_login, uname)
         
-    def twisted_callback(self, d):
+    def msg_rcvd_callback(self, user, msg):
         mt = self.builder.get_object("message_text")
-        buff = Gtk.TextBuffer()
-        mt.set_buffer(buff)
-        buff.set_text(d)
         
-        print d
+        if mt.get_buffer() == None:
+            buff = Gtk.TextBuffer()
+        else:
+            buff = mt.get_buffer()
+        
+        mt.set_buffer(buff)
+        
+        ei = buff.get_end_iter()
+        
+        #Should probably find nicer colors here...
+        if (self.o_c_tag == None):
+            self.o_c_tag = buff.create_tag( "them_colored", foreground="#FFFF00", background="#0000FF")      
+            
+        if (self.m_c_tag == None):
+            self.m_c_tag = buff.create_tag( "me_colored", foreground="#FFFF00", background="#F3C300")      
+            
+        print user + " == " + self.cf.uname    
+        if (user == self.cf.uname):
+            buff.insert_with_tags(ei, user + ":" , self.m_c_tag)
+        else:
+            buff.insert_with_tags(ei, user + ":" , self.o_c_tag)
+        
+        ei = buff.get_end_iter()
+        buff.insert(ei, " " + msg + "\n")
+                
+    def user_list_callback(self, users):
+        #Update the user list store
+        self.user_model.clear()
+        
+        for u in users:
+            self.user_model.append([u])
+        
+        
     
 class LoginDialog(Gtk.Dialog):
     def __init__(self, parent, content, uname, server):
