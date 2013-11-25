@@ -5,27 +5,48 @@
 from twisted.internet import protocol, gireactor
 
 class TISCapProtocol(protocol.Protocol):
+    _UNAME_TAKEN = 49
+    _MESSAGE = 343
+    _PRIVATE_MESSAGE = 2401
+    _USER_LIST = 16807
+    
     def connectionMade(self):
         #print dir(self.transport)
         #printf
-        self.transport.write("/login kyfffafasdffsdfle\r\n")
         #print dir(self)
-        
-
+        pass
     
     def dataReceived(self, data):
         #self.factory.reply_q.put(data)
-        self.factory.data_recieved(data)
+        self.factory.msgReceived(data)
+        #self.errorReceived("ASDF")
+        
+    def login(self, uname):
+        self.transport.write("/login " + uname + "\r\n")
+        
+    def sendMessage(self, message):
+        #print dir(self.transport)
+        print "Sending: " + str(message)
+        self.transport.writeSomeData("/public\r\n" + message)
+        
+    def userListReceived(self, usr):
+        pass
+        
+    def messageReceived(self, msg):
+        pass
+        
+    def errorReceived(self, err):
+        #print dir(self)
+        pass
       
 
 class ClientFac(protocol.ClientFactory):
     uname = None
     
-    def __init__(self, gui, callback):
-        self.gui = gui
+    def __init__(self, rcv, usr, err):
         self.protocol = TISCapProtocol
         self.instance = None
-        self.callback = callback
+        self.received_cb = rcv
     
     def startedConnecting(self, connector):
         print 'Connecting'
@@ -43,8 +64,8 @@ class ClientFac(protocol.ClientFactory):
     def clientConnectionFailed(self, connector, reason):
         print reason
         
-    def data_recieved(self, data):
-        self.callback(data)
+    def msgReceived(self, data):
+        self.received_cb(data)
 
 
 

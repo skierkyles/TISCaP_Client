@@ -11,7 +11,6 @@ from twisted.internet import reactor
 
 class TISCaPClient:
     def __init__(self):
-        self.uname = None
         self.server = None
         
         self.builder = None
@@ -30,9 +29,9 @@ class TISCaPClient:
         #self.communicator = CommThread()
         #self.communicator.start()
         
-        self.cf = ClientFac(self, self.twisted_callback)
+        self.cf = ClientFac(self.twisted_callback, None, None)
         
-        reactor.connectTCP("127.0.0.1", 4020, self.cf)
+        #reactor.connectTCP("127.0.0.1", 4020, self.cf)
         reactor.run()
         
         
@@ -52,6 +51,9 @@ class TISCaPClient:
         refresh_btn = self.builder.get_object("refresh_users_btn")
         refresh_btn.connect("clicked", self.refresh_users_click)
         
+        send_btn = self.builder.get_object("send_btn")
+        send_btn.connect("clicked", self.send_btn_clicked)
+        
         self.window.show_all()
         
     def quit(self, something, something_else):
@@ -59,10 +61,13 @@ class TISCaPClient:
         #Gtk.main_quit()
         reactor.stop()
         
-    def check_queues(self):
+    def send_btn_clicked(self, btn):
+        self.send_message()
         
-        #Need to return true to keep the timer going.
-        return True
+    def send_message(self):
+        send_entry = self.builder.get_object("send_entry")
+        txt = send_entry.get_text()
+        self.cf.instance.sendMessage(txt)
         
     def update_users_list(self):
         self.cf.instance.login("KYLE!")
@@ -98,7 +103,16 @@ class TISCaPClient:
         
         self.cf.uname = uname
         reactor.connectTCP(server, 4020, self.cf)
+        reactor.callLater(1, self.try_login, uname)
+        
         self.logged_in = True
+        
+    def try_login(self, uname):
+        if (self.cf.instance != None):
+            self.cf.instance.login(uname)
+            return True
+        
+        reactor.callLater(1, self.try_login, uname)
         
     def twisted_callback(self, d):
         mt = self.builder.get_object("message_text")
