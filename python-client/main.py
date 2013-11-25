@@ -61,7 +61,14 @@ class TISCaPClient:
         send_btn = self.builder.get_object("send_btn")
         send_btn.connect("clicked", self.send_btn_clicked)
         
+        entry_text = self.builder.get_object("send_entry")
+        entry_text.connect("key-press-event", self.entry_keypress)
+        
+        self._sw = self.builder.get_object("chat_scroll")
+        self._sw.connect("size-allocate", self._autoscroll)
+        
         self.window.show_all()
+        
         
     def quit(self, something, something_else):
         self.logged_in = False
@@ -70,6 +77,18 @@ class TISCaPClient:
             self.cf.instance.transport.loseConnection()
         
         reactor.stop()
+        
+    def _autoscroll(self, *args):
+        """The actual scrolling method"""
+        adj = self._sw.get_vadjustment()
+        adj.set_value(adj.get_upper() - adj.get_page_size())
+        
+    def entry_keypress(self, widget, event):
+        if event.keyval == 65293:
+            self.send_message()
+            return True
+        
+        return False
         
     def send_btn_clicked(self, btn):
         self.send_message()
@@ -110,7 +129,7 @@ class TISCaPClient:
         
         self.cf.uname = uname
         reactor.connectTCP(server, 4020, self.cf)
-        reactor.callLater(1, self.try_login, uname)
+        reactor.callLater(0.25, self.try_login, uname)
         
         self.logged_in = True
         
@@ -119,7 +138,7 @@ class TISCaPClient:
             self.cf.instance.login(uname)
             return True
         
-        reactor.callLater(1, self.try_login, uname)
+        reactor.callLater(0.25, self.try_login, uname)
         
     def msg_rcvd_callback(self, user, msg):
         mt = self.builder.get_object("message_text")
@@ -140,7 +159,6 @@ class TISCaPClient:
         if (self.m_c_tag == None):
             self.m_c_tag = buff.create_tag( "me_colored", foreground="#FFFF00", background="#F3C300")      
             
-        print user + " == " + self.cf.uname    
         if (user == self.cf.uname):
             buff.insert_with_tags(ei, user + ":" , self.m_c_tag)
         else:

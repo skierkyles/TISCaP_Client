@@ -29,11 +29,13 @@ class TISCapProtocol(protocol.Protocol):
         
         if (msg_type == "activeusers"):
             self.userListReceived(data)
-        if (msg_type == "public"):
+        elif (msg_type == "public"):
             self.messageReceived(data)
+        elif (msg_type == "connected"):
+            #Now this is pretty clever.
+            self.users()
         else: 
-            print "No case for this..."
-            print data
+            print "No case for this: " + msg_type
 
         
     def login(self, uname):
@@ -81,6 +83,7 @@ class ClientFac(protocol.ClientFactory):
         print reason
         
     def msgReceived(self, data):
+        #print "Message Received"
         #Parse the data down to a nice user and message.
         trimed = data[7:]
         (uname, sep, data) = trimed.partition("\r\n")
@@ -90,6 +93,7 @@ class ClientFac(protocol.ClientFactory):
         self.received_cb(uname, data)
 
     def userListReceived(self, data):
+        #print "User List Received"
         #Parse the data down to a nice python like list.
         
         #Remove the activeusers part.

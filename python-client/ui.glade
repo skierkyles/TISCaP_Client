@@ -97,11 +97,17 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkTextView" id="message_text">
+              <object class="GtkScrolledWindow" id="chat_scroll">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="editable">False</property>
-                <property name="wrap_mode">word</property>
+                <child>
+                  <object class="GtkTextView" id="message_text">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="editable">False</property>
+                    <property name="wrap_mode">word</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -110,19 +116,28 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTreeView" id="user_tree">
-                <property name="width_request">135</property>
+              <object class="GtkScrolledWindow" id="scrolledwindow1">
+                <property name="width_request">180</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="model">user_store</property>
                 <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn1">
-                    <property name="title" translatable="yes">User</property>
+                  <object class="GtkTreeView" id="user_tree">
+                    <property name="width_request">135</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="model">user_store</property>
+                    <property name="headers_clickable">False</property>
+                    <property name="search_column">0</property>
                     <child>
-                      <object class="GtkCellRendererText" id="cellrenderertext1"/>
-                      <attributes>
-                        <attribute name="text">0</attribute>
-                      </attributes>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn1">
+                        <property name="title" translatable="yes">User</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
                     </child>
                   </object>
                 </child>
