@@ -34,6 +34,10 @@ class TISCapProtocol(protocol.Protocol):
         elif (msg_type == "connected"):
             #Now this is pretty clever.
             self.users()
+        elif (msg_type == "welcome"):
+            self.welcomeReceived()
+        elif (msg_tpye == "private"):
+            self.privateMessageReceived(data)
         else: 
             print "No case for this: " + msg_type
 
@@ -53,6 +57,12 @@ class TISCapProtocol(protocol.Protocol):
     def messageReceived(self, msg):
         self.factory.msgReceived(msg)
         
+    def privateMessageReceived(self, msg):
+        self.factory.prvMsgReceived(msg)
+        
+    def welcomeReceived(self):
+        self.factory.connectionEstablished()
+       
     def errorReceived(self, err):
         pass
       
@@ -60,11 +70,14 @@ class TISCapProtocol(protocol.Protocol):
 class ClientFac(protocol.ClientFactory):
     uname = None
     
-    def __init__(self, rcv, usr, err):
+    def __init__(self, rcv, usr, prv, wlc, err):
         self.protocol = TISCapProtocol
         self.instance = None
         self.received_cb = rcv
         self.user_cb = usr
+        self.private_cb = prv
+        self.welcome_cb = wlc
+        self.error_cb = err
     
     def startedConnecting(self, connector):
         print 'Connecting'
@@ -82,6 +95,9 @@ class ClientFac(protocol.ClientFactory):
     def clientConnectionFailed(self, connector, reason):
         print reason
         
+    def connectionEstablished(self):
+        
+        
     def msgReceived(self, data):
         #print "Message Received"
         #Parse the data down to a nice user and message.
@@ -91,6 +107,9 @@ class ClientFac(protocol.ClientFactory):
         uname = uname.strip()
         
         self.received_cb(uname, data)
+
+    def prvMsgReceived(self, data):
+        pass
 
     def userListReceived(self, data):
         #print "User List Received"

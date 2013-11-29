@@ -34,7 +34,8 @@ class TISCaPClient:
         #self.communicator = CommThread()
         #self.communicator.start()
         
-        self.cf = ClientFac(self.msg_rcvd_callback, self.user_list_callback, None)
+        self.cf = ClientFac(self.msg_rcvd_callback, self.user_list_callback,
+                            None, self.welcome_callback, None)
         
         #reactor.connectTCP("127.0.0.1", 4020, self.cf)
         reactor.run()
@@ -174,6 +175,9 @@ class TISCaPClient:
         for u in users:
             self.user_model.append([u])
         
+    def welcome_callback(self):
+        #unlock the ui and do things in this method. 
+        pass
         
     
 class LoginDialog(Gtk.Dialog):
