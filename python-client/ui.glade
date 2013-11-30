@@ -75,6 +75,8 @@
         <child>
           <object class="GtkButton" id="send_btn">
             <property name="label" translatable="yes">Send</property>
+            <property name="width_request">65</property>
+            <property name="height_request">35</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="receives_default">True</property>
@@ -82,6 +84,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
+            <property name="padding">3</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -97,25 +100,11 @@
             <property name="position">1</property>
           </packing>
         </child>
-        <child>
-          <object class="GtkButton" id="refresh_users_btn">
-            <property name="label">gtk-refresh</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="receives_default">True</property>
-            <property name="use_stock">True</property>
-            <property name="image_position">top</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
       </object>
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
+        <property name="padding">3</property>
         <property name="position">2</property>
       </packing>
     </child>
@@ -151,22 +140,51 @@
   <object class="GtkBox" id="main_login">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="halign">center</property>
+    <property name="valign">center</property>
     <property name="orientation">vertical</property>
     <property name="spacing">5</property>
     <child>
-      <object class="GtkLabel" id="label4">
+      <object class="GtkLabel" id="label1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Username</property>
+        <property name="label" translatable="yes">&lt;span size='xx-large' weight='light'&gt;Login&lt;/span&gt;</property>
+        <property name="use_markup">True</property>
       </object>
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
+        <property name="padding">7</property>
         <property name="position">0</property>
       </packing>
     </child>
     <child>
+      <object class="GtkSeparator" id="separator1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="label4">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">&lt;big&gt;Username&lt;/big&gt;</property>
+        <property name="use_markup">True</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkEntry" id="login_uname_entry">
+        <property name="width_request">250</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="invisible_char">•</property>
@@ -176,19 +194,20 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">1</property>
+        <property name="position">3</property>
       </packing>
     </child>
     <child>
       <object class="GtkLabel" id="label5">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Server IP Address</property>
+        <property name="label" translatable="yes">&lt;big&gt;Server IP Address&lt;/big&gt;</property>
+        <property name="use_markup">True</property>
       </object>
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">2</property>
+        <property name="position">4</property>
       </packing>
     </child>
     <child>
@@ -202,7 +221,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">3</property>
+        <property name="position">5</property>
       </packing>
     </child>
     <child>
@@ -223,6 +242,8 @@
         <child>
           <object class="GtkButton" id="login_connect_btn">
             <property name="label">gtk-connect</property>
+            <property name="width_request">65</property>
+            <property name="height_request">35</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="receives_default">True</property>
@@ -238,16 +259,153 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
+        <property name="position">6</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkBox" id="main_private">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox" id="box4">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel" id="private_message_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">&lt;span size='xx-large' weight='light'&gt;Private Message with&lt;/span&gt;</property>
+            <property name="use_markup">True</property>
+            <property name="justify">right</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">6</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="private_message_user">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">JimBob</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparator" id="separator2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkTextView" id="private_message_in_content">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="pixels_above_lines">6</property>
+        <property name="pixels_below_lines">6</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="padding">3</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkTextView" id="private_message_content">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="pixels_above_lines">6</property>
+        <property name="pixels_below_lines">6</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="padding">3</property>
+        <property name="position">3</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="box3">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkButton" id="private_message_ok">
+            <property name="label">gtk-ok</property>
+            <property name="width_request">65</property>
+            <property name="height_request">35</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="receives_default">True</property>
+            <property name="use_stock">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator" id="separator3">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="private_message_send">
+            <property name="label" translatable="yes">Send</property>
+            <property name="width_request">65</property>
+            <property name="height_request">35</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="receives_default">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="padding">3</property>
         <property name="position">4</property>
       </packing>
     </child>
   </object>
   <object class="GtkWindow" id="main_window">
-    <property name="width_request">440</property>
-    <property name="height_request">250</property>
+    <property name="width_request">600</property>
+    <property name="height_request">325</property>
     <property name="can_focus">False</property>
-    <property name="default_width">440</property>
-    <property name="default_height">250</property>
+    <property name="default_width">600</property>
+    <property name="default_height">325</property>
     <child>
       <placeholder/>
     </child>

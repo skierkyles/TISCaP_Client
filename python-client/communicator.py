@@ -6,14 +6,10 @@ from twisted.internet import protocol, gireactor
 
 class TISCapProtocol(protocol.Protocol):    
     def connectionMade(self):
-        #print dir(self.transport)
-        #printf
-        #print dir(self)
         pass
     
     def dataReceived(self, data):
         #print "Data Received: " + data
-        
         if (len(data) == 0):
             return
         
@@ -24,20 +20,20 @@ class TISCapProtocol(protocol.Protocol):
         
         
         if (msg_type == "activeusers"):
-            self.userListReceived(data)
+            self.factory.userListReceived(data)
         elif (msg_type == "public"):
-            self.messageReceived(data)
+            self.factory.msgReceived(data)
         elif (msg_type == "connected"):
             #Now this is pretty clever.
             self.users()
         elif (msg_type == "disconnected"):
             self.users()
         elif (msg_type == "welcome"):
-            self.welcomeReceived()
+            self.factory.connectionEstablished()
         elif (msg_type == "private"):
-            self.privateMessageReceived(data)
+            self.factory.prvMsgReceived(data)
         elif (msg_type == "usernametaken"):
-            self.userNameTaken()
+            self.factory.userNameTaken()
         else: 
             print "No case for this: '" + msg_type + "'"
 
@@ -51,21 +47,9 @@ class TISCapProtocol(protocol.Protocol):
     def sendMessage(self, message):
         self.transport.writeSomeData("/public\r\n" + message)
         
-    def userListReceived(self, usr):
-        self.factory.userListReceived(usr)
-        
-    def messageReceived(self, msg):
-        self.factory.msgReceived(msg)
-        
-    def privateMessageReceived(self, msg):
-        self.factory.prvMsgReceived(msg)
-        
-    def welcomeReceived(self):
-        self.factory.connectionEstablished()
-       
-    def userNameTaken(self):
-        self.factory.userNameTaken()
-      
+    def sendPrivateMessage(self, user, message):
+        self.transport.writeSomeData("/private " + user + "\r\n" + message)
+
     def errorReceived(self, err):
         pass
       
@@ -107,12 +91,19 @@ class ClientFac(protocol.ClientFactory):
         trimed = data[7:]
         (uname, sep, data) = trimed.partition("\r\n")
         
+        #Strip off the 0004
+        data = data[:-1]
         uname = uname.strip()
         
         self.received_cb(uname, data)
 
     def prvMsgReceived(self, data):
-        pass
+        trimed = data[9:]
+        (uname, sep, data) = trimed.partition("\r\n")
+        data = data[:-1]
+        uname = uname.strip()
+        
+        self.private_cb(uname, data)
 
     def userListReceived(self, data):
         #print "User List Received"

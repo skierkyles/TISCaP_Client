@@ -28,23 +28,12 @@ class TISCaPClient:
         self.builder.add_from_file("ui.glade")
         
         self.setup_ui()
-        
-        #Connecting to teh server
 
-        #self.communicator = CommThread()
-        #self.communicator.start()
         
         self.cf = ClientFac(self.msg_rcvd_callback, self.user_list_callback,
-                            None, self.welcome_callback, None, self.login_callback)
+                            self.private_callback, self.welcome_callback, None, self.login_callback)
         
-        #reactor.connectTCP("127.0.0.1", 4020, self.cf)
         reactor.run()
-        
-        
-        #GLib.timeout_add(100, self.check_queues)
-        
-        
-        #Gtk.main() 
         
 
     def setup_ui(self):
@@ -55,6 +44,7 @@ class TISCaPClient:
         self.main_content = self.builder.get_object("main_content")
         self.main_loading = self.builder.get_object("main_loading")
         self.main_login = self.builder.get_object("main_login")
+        self.main_private = self.builder.get_object("main_private")
         #########################################
         
         #self.window.add(self.main_content)
@@ -62,9 +52,6 @@ class TISCaPClient:
         self.user_model = self.builder.get_object("user_store")
         
         #Main content stuff.
-        
-        refresh_btn = self.builder.get_object("refresh_users_btn")
-        refresh_btn.connect("clicked", self.refresh_users_click)
         
         send_btn = self.builder.get_object("send_btn")
         send_btn.connect("clicked", lambda x: self.send_message())
@@ -75,6 +62,9 @@ class TISCaPClient:
         self._sw = self.builder.get_object("chat_scroll")
         self._sw.connect("size-allocate", self._autoscroll)
         
+        user_tree = self.builder.get_object("user_tree")
+        user_tree.connect("row-activated", self.user_clicked)
+        
         ##############
         
         #Login content stuff
@@ -84,13 +74,22 @@ class TISCaPClient:
         
         #####################
         
+        
+        #Private Message Stuff
+        
+        pm_send_btn = self.builder.get_object("private_message_send")
+        pm_send_btn.connect("clicked", self.private_send_clicked)
+        
+        pm_okay_btn = self.builder.get_object("private_message_ok")
+        pm_okay_btn.connect("clicked", lambda x: self.display_main())
+        
+        ######################
+        
         self.window.show_all()
-        
-        
         
         self.display_login()
         
-        
+    #Misc Methods    
     def quit(self, something, something_else):
         self.logged_in = False
         #Gtk.main_quit()
@@ -110,7 +109,7 @@ class TISCaPClient:
             return True
         
         return False
-        
+    #End Misc Methods    
         
     def send_message(self):
         send_entry = self.builder.get_object("send_entry")
@@ -118,19 +117,12 @@ class TISCaPClient:
         send_entry.set_text("")
         self.cf.instance.sendMessage(txt)
         
-    def refresh_users_click(self, button):
-        self.cf.instance.users()
-        
+    ####################################
+    ## Switching Around Visible Views ##
+    ####################################
+    
     def display_login(self, msg=None):
-        try:
-            self.window.remove(self.main_content)
-        except:
-            pass
-        
-        try:
-            self.window.remove(self.main_loading)
-        except:
-            pass
+        self.hide_content_panes()
         
         self.window.add(self.main_login)
         self.main_login.show_all()
@@ -142,30 +134,13 @@ class TISCaPClient:
             err_lbl.set_text(msg)
     
     def display_main(self):
-        try:
-            self.window.remove(self.main_loading)
-        except:
-            pass
-        
-        try: 
-            self.window.remove(self.main_login)
-        except:
-            pass
-        
+        self.hide_content_panes() 
         
         self.window.add(self.main_content)
         self.main_content.show_all()
         
     def display_loading(self):
-        try:
-            self.window.remove(self.main_content)
-        except:
-            pass
-        
-        try: 
-            self.window.remove(self.main_login)
-        except:
-            pass
+        self.hide_content_panes()
         
         self.window.add(self.main_loading)
         
@@ -174,6 +149,56 @@ class TISCaPClient:
         
         self.main_loading.show_all()
         
+    def display_private(self, usr, msg=None):
+        self.hide_content_panes()
+
+        #If message is none, it is an initial message to a user
+        #If message has content, it's displaing a private message,
+        #and the person can respond.
+        
+        pm_label = self.builder.get_object("private_message_user")
+        pm_label.set_markup("<span size='xx-large' weight='light'>" + usr + "</span>")
+        
+        in_content = self.builder.get_object("private_message_in_content")
+        in_buff = in_content.get_buffer()
+        in_buff.delete(in_buff.get_start_iter(), in_buff.get_end_iter())
+        
+        if (msg != None):
+            in_buff.insert(in_buff.get_start_iter(), msg)
+            
+        self.window.add(self.main_private)
+        self.main_private.show_all()
+             
+    #helper method to hide everything.
+    def hide_content_panes(self):
+        #Content
+        try:
+            self.window.remove(self.main_content)
+        except:
+            pass
+        
+        #Login        
+        try: 
+            self.window.remove(self.main_login)
+        except:
+            pass
+        
+        #Loading
+        try:
+            self.window.remove(self.main_loading)
+        except:
+            pass
+        
+        #Private
+        try:
+            self.window.remove(self.main_private)
+        except:
+            pass   
+    #End Switcher methods    
+        
+        
+    ##############    
+    #Login Methods
     def connect_clicked(self, btn):
         uname_e = self.builder.get_object("login_uname_entry")
         server_e = self.builder.get_object("login_ip_entry")
@@ -203,6 +228,28 @@ class TISCaPClient:
             return True
         
         reactor.callLater(0.25, self.try_login, uname)
+    #End Login Methods    
+        
+    #Private Message Methods    
+    def user_clicked(self, view, index, column):
+        to_user = self.user_model[index][0]
+        self.display_private(to_user)
+        
+    def private_send_clicked(self, btn):
+        to_user = self.builder.get_object("private_message_user").get_text()
+        msg_buff = self.builder.get_object("private_message_content").get_buffer()
+        msg_text = msg_buff.get_text(msg_buff.get_start_iter(), msg_buff.get_end_iter(), False)
+        msg_buff.delete(msg_buff.get_start_iter(), msg_buff.get_end_iter())
+        
+        self.cf.instance.sendPrivateMessage(to_user, msg_text)
+        
+        self.display_main()
+        
+    #End PM Methods    
+        
+    ##############################
+    ## Call backs from twisted. ##
+    ##############################   
         
     def msg_rcvd_callback(self, user, msg):
         mt = self.builder.get_object("message_text")
@@ -245,6 +292,9 @@ class TISCaPClient:
     def login_callback(self, msg):
         self.display_login(msg)
         
+    def private_callback(self, uname, msg):
+        self.display_private(uname, msg)
+    #End Callback Methods
         
 if __name__ == "__main__":
     client = TISCaPClient()
