@@ -162,6 +162,7 @@ class TISCaPClient:
         pm_label.set_markup("<span size='xx-large' weight='light'>" + usr + "</span>")
         
         in_content = self.builder.get_object("private_message_in_content")
+        in_label = self.builder.get_object("private_in_text")
         in_buff = in_content.get_buffer()
         in_buff.delete(in_buff.get_start_iter(), in_buff.get_end_iter())
         
@@ -173,6 +174,7 @@ class TISCaPClient:
             in_buff.insert(in_buff.get_start_iter(), msg)
         else:
             in_content.hide()
+            in_label.hide()
              
     #helper method to hide everything.
     def hide_content_panes(self):
@@ -291,7 +293,6 @@ class TISCaPClient:
         #Make the user's name be at the top in bold.
         users.remove(self.uname)
         self.user_model.append([self.uname, 700])
-        
         
         for u in users:
             self.user_model.append([u, 400])
