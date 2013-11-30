@@ -13,6 +13,8 @@ class TISCaPClient:
     def __init__(self):
         self.server = None
         
+        self.uname = None
+        
         self.builder = None
         self.window = None
         
@@ -163,11 +165,14 @@ class TISCaPClient:
         in_buff = in_content.get_buffer()
         in_buff.delete(in_buff.get_start_iter(), in_buff.get_end_iter())
         
-        if (msg != None):
-            in_buff.insert(in_buff.get_start_iter(), msg)
             
         self.window.add(self.main_private)
         self.main_private.show_all()
+        
+        if (msg != None):
+            in_buff.insert(in_buff.get_start_iter(), msg)
+        else:
+            in_content.hide()
              
     #helper method to hide everything.
     def hide_content_panes(self):
@@ -225,6 +230,7 @@ class TISCaPClient:
     def try_login(self, uname):
         if (self.cf.instance != None):
             self.cf.instance.login(uname)
+            self.uname = uname
             return True
         
         reactor.callLater(0.25, self.try_login, uname)
@@ -282,8 +288,13 @@ class TISCaPClient:
         #Update the user list store
         self.user_model.clear()
         
+        #Make the user's name be at the top in bold.
+        users.remove(self.uname)
+        self.user_model.append([self.uname, 700])
+        
+        
         for u in users:
-            self.user_model.append([u])
+            self.user_model.append([u, 400])
         
     def welcome_callback(self):
         #unlock the ui and do things in this method. 
