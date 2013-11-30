@@ -175,27 +175,6 @@ class TISCaPClient:
         
         self.window.add(self.main_loading)
         self.main_loading.show_all()
-    
-    def show_login_dialog(self):
-        #TODO Figure out why the dialog is blank when you click it a second time.
-        content = self.builder.get_object("login_dialog_content")
-        content.show_all()
-        
-        dialog = LoginDialog(self.window, content, self.builder.get_object("uname_entry"), self.builder.get_object("ip_entry"))
-        res = dialog.run()
-        
-        if res is not None:
-            self.uname = res[0]
-            self.server = res[1]
-            
-            self.login_to_server(self.server, self.uname)
-            
-            self.window.remove(self.main_content)
-            self.window.add(self.main_loading)
-            self.main_loading.show_all()
-            
-            
-        dialog.destroy()
         
     def connect_clicked(self, btn):
         uname_e = self.builder.get_object("login_uname_entry")
@@ -257,38 +236,9 @@ class TISCaPClient:
         
     def welcome_callback(self):
         #unlock the ui and do things in this method. 
-        
         self.display_main()
         
         
-    
-class LoginDialog(Gtk.Dialog):
-    def __init__(self, parent, content, uname, server):
-        Gtk.Dialog.__init__(self, "Connect to a Server", parent, 0, 
-                            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                             Gtk.STOCK_CONNECT, Gtk.ResponseType.OK))
-        self.set_default_size(300, 175)
-        
-        self.content = content
-        self.uname = uname
-        self.server = server
-        
-        box = self.get_content_area()
-        box.add(self.content)
-        
-        self.show_all()
-
-        
-    def run(self): 
-        result = super(LoginDialog, self).run()
-        
-        if result == Gtk.ResponseType.OK:
-            text = (self.uname.get_text(), self.server.get_text())
-        else:
-            text = None
-            
-        return text
-    
 if __name__ == "__main__":
     client = TISCaPClient()
     client.start()
