@@ -4,12 +4,7 @@
 
 from twisted.internet import protocol, gireactor
 
-class TISCapProtocol(protocol.Protocol):
-    _UNAME_TAKEN = 49
-    _MESSAGE = 343
-    _PRIVATE_MESSAGE = 2401
-    _USER_LIST = 16807
-    
+class TISCapProtocol(protocol.Protocol):    
     def connectionMade(self):
         #print dir(self.transport)
         #printf
@@ -25,6 +20,7 @@ class TISCapProtocol(protocol.Protocol):
         t = data.split(" ")
         msg_type = t[0].lower()
         msg_type = msg_type[1:]
+        msg_type = msg_type.strip()
         
         
         if (msg_type == "activeusers"):
@@ -36,10 +32,10 @@ class TISCapProtocol(protocol.Protocol):
             self.users()
         elif (msg_type == "welcome"):
             self.welcomeReceived()
-        elif (msg_tpye == "private"):
+        elif (msg_type == "private"):
             self.privateMessageReceived(data)
         else: 
-            print "No case for this: " + msg_type
+            print "No case for this: '" + msg_type + "'"
 
         
     def login(self, uname):
@@ -96,7 +92,7 @@ class ClientFac(protocol.ClientFactory):
         print reason
         
     def connectionEstablished(self):
-        
+        self.welcome_cb()
         
     def msgReceived(self, data):
         #print "Message Received"

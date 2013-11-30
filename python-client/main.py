@@ -51,7 +51,17 @@ class TISCaPClient:
         self.window = self.builder.get_object("main_window")
         self.window.connect("delete-event", self.quit)
         
+        #The different views the window may hold...
+        self.main_content = self.builder.get_object("main_content")
+        self.main_loading = self.builder.get_object("main_loading")
+        self.main_login = self.builder.get_object("main_login")
+        #########################################
+        
+        #self.window.add(self.main_content)
+        
         self.user_model = self.builder.get_object("user_store")
+        
+        #Main content stuff.
         
         login_btn = self.builder.get_object("login_btn")
         login_btn.connect("clicked", self.login_btn_click)
@@ -60,7 +70,7 @@ class TISCaPClient:
         refresh_btn.connect("clicked", self.refresh_users_click)
         
         send_btn = self.builder.get_object("send_btn")
-        send_btn.connect("clicked", self.send_btn_clicked)
+        send_btn.connect("clicked", lambda x: self.send_message())
         
         entry_text = self.builder.get_object("send_entry")
         entry_text.connect("key-press-event", self.entry_keypress)
@@ -68,7 +78,20 @@ class TISCaPClient:
         self._sw = self.builder.get_object("chat_scroll")
         self._sw.connect("size-allocate", self._autoscroll)
         
+        ##############
+        
+        #Login content stuff
+        
+        connect_btn = self.builder.get_object("login_connect_btn")
+        connect_btn.connect("clicked", self.connect_clicked)
+        
+        #####################
+        
         self.window.show_all()
+        
+        
+        
+        self.display_login()
         
         
     def quit(self, something, something_else):
@@ -91,8 +114,6 @@ class TISCaPClient:
         
         return False
         
-    def send_btn_clicked(self, btn):
-        self.send_message()
         
     def send_message(self):
         send_entry = self.builder.get_object("send_entry")
@@ -105,6 +126,55 @@ class TISCaPClient:
         
     def login_btn_click(self, button):
         self.show_login_dialog()
+        
+    def display_login(self, msg=None):
+        try:
+            self.window.remove(self.main_content)
+        except:
+            pass
+        
+        try:
+            self.window.remove(self.main_loading)
+        except:
+            pass
+        
+        self.window.add(self.main_login)
+        self.main_login.show_all()
+        
+        #Set a nice message displaying what went wrong... 
+        #If relevant.
+        if (msg != None):
+            err_lbl = self.builder.get_object("login_error_label")
+            err_lbl.set_text(msg)
+    
+    def display_main(self):
+        try:
+            self.window.remove(self.main_loading)
+        except:
+            pass
+        
+        try: 
+            self.window.remove(self.main_login)
+        except:
+            pass
+        
+        
+        self.window.add(self.main_content)
+        self.main_content.show_all()
+        
+    def display_loading(self):
+        try:
+            self.window.remove(self.main_content)
+        except:
+            pass
+        
+        try: 
+            self.window.remove(self.main_login)
+        except:
+            pass
+        
+        self.window.add(self.main_loading)
+        self.main_loading.show_all()
     
     def show_login_dialog(self):
         #TODO Figure out why the dialog is blank when you click it a second time.
@@ -120,8 +190,18 @@ class TISCaPClient:
             
             self.login_to_server(self.server, self.uname)
             
+            self.window.remove(self.main_content)
+            self.window.add(self.main_loading)
+            self.main_loading.show_all()
+            
             
         dialog.destroy()
+        
+    def connect_clicked(self, btn):
+        uname_e = self.builder.get_object("login_uname_entry")
+        server_e = self.builder.get_object("login_ip_entry")
+        
+        self.login_to_server(server_e.get_text(), uname_e.get_text())
         
     def login_to_server(self, server, uname):
         if server == "":
@@ -177,7 +257,9 @@ class TISCaPClient:
         
     def welcome_callback(self):
         #unlock the ui and do things in this method. 
-        pass
+        
+        self.display_main()
+        
         
     
 class LoginDialog(Gtk.Dialog):
