@@ -35,7 +35,7 @@ class TISCaPClient:
         #self.communicator.start()
         
         self.cf = ClientFac(self.msg_rcvd_callback, self.user_list_callback,
-                            None, self.welcome_callback, None)
+                            None, self.welcome_callback, None, self.login_callback)
         
         #reactor.connectTCP("127.0.0.1", 4020, self.cf)
         reactor.run()
@@ -62,9 +62,6 @@ class TISCaPClient:
         self.user_model = self.builder.get_object("user_store")
         
         #Main content stuff.
-        
-        login_btn = self.builder.get_object("login_btn")
-        login_btn.connect("clicked", self.login_btn_click)
         
         refresh_btn = self.builder.get_object("refresh_users_btn")
         refresh_btn.connect("clicked", self.refresh_users_click)
@@ -124,9 +121,6 @@ class TISCaPClient:
     def refresh_users_click(self, button):
         self.cf.instance.users()
         
-    def login_btn_click(self, button):
-        self.show_login_dialog()
-        
     def display_login(self, msg=None):
         try:
             self.window.remove(self.main_content)
@@ -174,15 +168,25 @@ class TISCaPClient:
             pass
         
         self.window.add(self.main_loading)
+        
+        spinner = self.builder.get_object("spinner1")
+        spinner.start()
+        
         self.main_loading.show_all()
         
     def connect_clicked(self, btn):
         uname_e = self.builder.get_object("login_uname_entry")
         server_e = self.builder.get_object("login_ip_entry")
         
-        self.login_to_server(server_e.get_text(), uname_e.get_text())
+        if (uname_e.get_text() != ""):
+            self.login_to_server(server_e.get_text(), uname_e.get_text())
+        else:
+            err_lbl = self.builder.get_object("login_error_label")
+            err_lbl.set_text("You must enter a user name")
         
     def login_to_server(self, server, uname):
+        self.display_loading()
+        
         if server == "":
             server = "127.0.0.1"
         
@@ -237,6 +241,9 @@ class TISCaPClient:
     def welcome_callback(self):
         #unlock the ui and do things in this method. 
         self.display_main()
+        
+    def login_callback(self, msg):
+        self.display_login(msg)
         
         
 if __name__ == "__main__":

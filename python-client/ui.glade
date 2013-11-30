@@ -1,90 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-  <object class="GtkBox" id="login_dialog_content">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="orientation">vertical</property>
-    <property name="spacing">5</property>
-    <child>
-      <object class="GtkLabel" id="label1">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Username</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkEntry" id="uname_entry">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="invisible_char">•</property>
-        <property name="primary_icon_stock">gtk-orientation-portrait</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel" id="label2">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Server IP Address</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkEntry" id="ip_entry">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="invisible_char">•</property>
-        <property name="primary_icon_stock">gtk-network</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
-    </child>
-  </object>
   <object class="GtkBox" id="main_content">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
-    <child>
-      <object class="GtkToolbar" id="tools">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <child>
-          <object class="GtkToolButton" id="login_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Login</property>
-            <property name="use_underline">True</property>
-            <property name="stock_id">gtk-connect</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
     <child>
       <object class="GtkBox" id="message_and_users_box">
         <property name="visible">True</property>
@@ -219,7 +139,7 @@
       <object class="GtkLabel" id="label3">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Loading Shenanigans...</property>
+        <property name="label" translatable="yes">Loading, this shouldn't take too long.</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -323,7 +243,11 @@
     </child>
   </object>
   <object class="GtkWindow" id="main_window">
+    <property name="width_request">440</property>
+    <property name="height_request">250</property>
     <property name="can_focus">False</property>
+    <property name="default_width">440</property>
+    <property name="default_height">250</property>
     <child>
       <placeholder/>
     </child>
