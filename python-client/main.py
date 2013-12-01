@@ -4,6 +4,7 @@ from gi.repository import Gtk, GLib
 from communicator import ClientFac
 import Queue
 import threading
+import string
 
 from twisted.internet import protocol, gtk3reactor
 gtk3reactor.install()
@@ -73,12 +74,17 @@ class TISCaPClient:
         connect_btn.connect("clicked", self.connect_clicked)
                 
         #Prevent the user from going bonkers with their uname
-        def filter_chars(entry, *args):
+        def filter_chars_check_input(entry, *args):
             text = entry.get_text().strip()
-            entry.set_text(''.join([i for i in text if i in 'abcdefghijklmnopqrstuvwxyz']))
+            entry.set_text(''.join([i for i in text if i in string.ascii_letters]))
+            
+            if (len(text) > 0):
+                connect_btn.set_sensitive(True)
+            else:
+                connect_btn.set_sensitive(False)
                 
         uname_entry = self.builder.get_object("login_uname_entry")
-        uname_entry.connect('changed', filter_chars)
+        uname_entry.connect('changed', filter_chars_check_input)
                 
         #####################
         
@@ -215,6 +221,7 @@ class TISCaPClient:
         uname_e = self.builder.get_object("login_uname_entry")
         server_e = self.builder.get_object("login_ip_entry")
         
+        #This else shouldn't ever happen I guess
         if (uname_e.get_text() != ""):
             self.login_to_server(server_e.get_text(), uname_e.get_text())
         else:
