@@ -16,7 +16,7 @@ class TISCapProtocol(protocol.Protocol):
         t = data.split(" ")
         
         #Protocol is bananas here.
-        if (len(t) == 0):
+        if (len(t) == 1):
             t = data.split("\r\n")
         
         msg_type = t[0].lower()

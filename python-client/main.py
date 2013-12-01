@@ -23,9 +23,7 @@ class TISCaPClient:
         self.m_c_tag = None
         #End elimination...
     
-    def start(self): 
-        self.logged_in = False
-        
+    def start(self):         
         self.builder = Gtk.Builder()
         self.builder.add_from_file("ui.glade")
         
@@ -93,7 +91,6 @@ class TISCaPClient:
         
     #Misc Methods    
     def quit(self, something, something_else):
-        self.logged_in = False
         #Gtk.main_quit()
         if (self.cf.instance != None):
             self.cf.instance.transport.loseConnection()
@@ -226,9 +223,7 @@ class TISCaPClient:
         self.cf.uname = uname
         reactor.connectTCP(server, 4020, self.cf)
         reactor.callLater(0.25, self.try_login, uname)
-        
-        self.logged_in = True
-        
+                
     def try_login(self, uname):
         if (self.cf.instance != None):
             self.cf.instance.login(uname)
