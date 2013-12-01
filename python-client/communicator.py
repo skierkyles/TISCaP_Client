@@ -39,6 +39,8 @@ class TISCapProtocol(protocol.Protocol):
             self.factory.prvMsgReceived(data)
         elif (msg_type == "usernametaken"):
             self.factory.userNameTaken()
+        elif (msg_type == "error" or msg_type == "badsyntax"):
+            self.factory.error(data)
         else: 
             print "No case for this: '" + msg_type + "'"
 
@@ -126,7 +128,8 @@ class ClientFac(protocol.ClientFactory):
     def userNameTaken(self):
         self.login_cb("Username Taken")
 
-
+    def error(self, data):
+        self.error_cb(data)
 
 
 

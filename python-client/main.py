@@ -31,7 +31,7 @@ class TISCaPClient:
 
         
         self.cf = ClientFac(self.msg_rcvd_callback, self.user_list_callback,
-                            self.private_callback, self.welcome_callback, None, self.login_callback)
+                            self.private_callback, self.welcome_callback, self.error_callback, self.login_callback)
         
         reactor.run()
         
@@ -71,7 +71,15 @@ class TISCaPClient:
         
         connect_btn = self.builder.get_object("login_connect_btn")
         connect_btn.connect("clicked", self.connect_clicked)
-        
+                
+        #Prevent the user from going bonkers with their uname
+        def filter_chars(entry, *args):
+            text = entry.get_text().strip()
+            entry.set_text(''.join([i for i in text if i in 'abcdefghijklmnopqrstuvwxyz']))
+                
+        uname_entry = self.builder.get_object("login_uname_entry")
+        uname_entry.connect('changed', filter_chars)
+                
         #####################
         
         
@@ -301,6 +309,16 @@ class TISCaPClient:
         
     def private_callback(self, uname, msg):
         self.display_private(uname, msg)
+        
+    def error_callback(self, data):
+        #Do things here to the status bar thingimebob.
+        #sb = self.builder.get_object("info_bar")
+        #sb.push(0, str(data))
+        
+        #I don't like status bars. So this won't have one.
+        pass
+        
+        
     #End Callback Methods
         
 if __name__ == "__main__":
