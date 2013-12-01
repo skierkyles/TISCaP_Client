@@ -273,10 +273,10 @@ class TISCaPClient:
         
         #Should probably find nicer colors here...
         if (self.o_c_tag == None):
-            self.o_c_tag = buff.create_tag( "them_colored", foreground="#FFFF00", background="#0000FF")      
+            self.o_c_tag = buff.create_tag( "them_colored", foreground="#FFFFFF", background="#2C30FF", weight=700)      
             
         if (self.m_c_tag == None):
-            self.m_c_tag = buff.create_tag( "me_colored", foreground="#FFFF00", background="#F3C300")      
+            self.m_c_tag = buff.create_tag( "me_colored", foreground="#FFFFFF", background="#3BB212")      
             
         if (user == self.cf.uname):
             buff.insert_with_tags(ei, user + ":" , self.m_c_tag)

@@ -338,8 +338,8 @@
       <object class="GtkTextView" id="private_message_in_content">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="pixels_above_lines">6</property>
-        <property name="pixels_below_lines">6</property>
+        <property name="left_margin">6</property>
+        <property name="right_margin">6</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -365,8 +365,8 @@
       <object class="GtkTextView" id="private_message_content">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="pixels_above_lines">6</property>
-        <property name="pixels_below_lines">6</property>
+        <property name="left_margin">6</property>
+        <property name="right_margin">6</property>
       </object>
       <packing>
         <property name="expand">True</property>
