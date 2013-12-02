@@ -107,7 +107,7 @@ class TISCaPClient:
     def quit(self, something, something_else):
         #Gtk.main_quit()
         if (self.cf.instance != None):
-            self.cf.instance.transport.loseConnection()
+            self.cf.instance.close()
         
         reactor.stop()
         

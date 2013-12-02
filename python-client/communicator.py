@@ -28,10 +28,8 @@ class TISCapProtocol(protocol.Protocol):
             self.factory.userListReceived(data)
         elif (msg_type == "public"):
             self.factory.msgReceived(data)
-        elif (msg_type == "connected"):
+        elif (msg_type == "connected" or msg_type == "disconnected"):
             #Now this is pretty clever.
-            self.users()
-        elif (msg_type == "disconnected"):
             self.users()
         elif (msg_type == "welcome"):
             self.factory.connectionEstablished()
@@ -48,6 +46,10 @@ class TISCapProtocol(protocol.Protocol):
     def login(self, uname):
         self.transport.writeSomeData("/login " + uname + "\r\n")
         
+    def close(self):
+        self.transport.writeSomeData("/close\r\n")
+        self.transport.loseConnection()
+        
     def users(self):
         self.transport.writeSomeData("/users\r\n")
         
@@ -57,9 +59,6 @@ class TISCapProtocol(protocol.Protocol):
     def sendPrivateMessage(self, user, message):
         self.transport.writeSomeData("/private " + user + "\r\n" + message)
 
-    def errorReceived(self, err):
-        pass
-      
 
 class ClientFac(protocol.ClientFactory):    
     def __init__(self, rcv, usr, prv, wlc, err, lgn):
