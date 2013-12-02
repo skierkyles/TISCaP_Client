@@ -117,17 +117,27 @@ class TISCaPClient:
         adj.set_value(adj.get_upper() - adj.get_page_size())
         
     def entry_keypress(self, widget, event):
-        if event.keyval == 65293:
+        if event.keyval == 65293 and len(widget.get_text()) > 0:
             self.send_message()
             return True
+        
+        send_btn = self.builder.get_object("send_btn")
+        if len(widget.get_text()) > 0:
+            #Make button active
+            send_btn.set_sensitive(True)
+        else: 
+            #Make button inactive
+            send_btn.set_sensitive(False)
         
         return False
     #End Misc Methods    
         
     def send_message(self):
         send_entry = self.builder.get_object("send_entry")
+        send_btn = self.builder.get_object("send_btn")
         txt = send_entry.get_text()
         send_entry.set_text("")
+        send_btn.set_sensitive(False)
         self.cf.instance.sendMessage(txt)
         
     ####################################
