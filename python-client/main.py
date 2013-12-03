@@ -41,6 +41,8 @@ class TISCaPClient:
         self.window = self.builder.get_object("main_window")
         self.window.connect("delete-event", self.quit)
         
+        self.window.set_title("Yet Another TISCaP Client")
+        
         #The different views the window may hold...
         self.main_content = self.builder.get_object("main_content")
         self.main_loading = self.builder.get_object("main_loading")
