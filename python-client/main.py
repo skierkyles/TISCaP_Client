@@ -59,6 +59,9 @@ class TISCaPClient:
         send_btn = self.builder.get_object("send_btn")
         send_btn.connect("clicked", lambda x: self.send_message())
         
+        utf8_btn = self.builder.get_object("char_btn")
+        utf8_btn.connect("clicked", self.silly_char)
+        
         entry_text = self.builder.get_object("send_entry")
         entry_text.connect("key-press-event", self.entry_keypress)
         
@@ -124,12 +127,12 @@ class TISCaPClient:
             return True
         
         send_btn = self.builder.get_object("send_btn")
-        if len(widget.get_text()) > 0:
+        if len(widget.get_text()) == 0:
             #Make button active
-            send_btn.set_sensitive(True)
+            send_btn.set_sensitive(False)
         else: 
             #Make button inactive
-            send_btn.set_sensitive(False)
+            send_btn.set_sensitive(True)
         
         return False
     #End Misc Methods    
@@ -140,7 +143,16 @@ class TISCaPClient:
         txt = send_entry.get_text()
         send_entry.set_text("")
         send_btn.set_sensitive(False)
+        
+        print "Sending " + txt
+        
         self.cf.instance.sendMessage(txt)
+        
+    def silly_char(self, btn):
+        pass
+    
+    def return_random_char(self):
+        return 'K'
         
     ####################################
     ## Switching Around Visible Views ##

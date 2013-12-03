@@ -41,6 +41,14 @@ class TISCapProtocol(protocol.Protocol):
             self.factory.error(data)
         else: 
             print "No case for this: '" + msg_type + "'"
+            #A shim to maybe make some things work.
+            shim = msg_type.split("]")[0]
+            
+            if (len(shim) > 1):
+                print "Something went wrong with the byte stream."
+                print "Everything should still work though"
+                self.dataReceived("]" + shim)
+                self.users()
 
         
     def login(self, uname):
@@ -54,14 +62,19 @@ class TISCapProtocol(protocol.Protocol):
         self.transport.writeSomeData("/users\r\n")
         
     def sendMessage(self, message):
+        message = message.decode('utf-8')
         msg = "/public\r\n" + message + u"\u0004"
-        msg = msg.encode('utf-8') 
-        self.transport.writeSomeData(msg)
+        utf8 = msg.encode('utf-8')
+
+        self.transport.writeSomeData(utf8)
         
     def sendPrivateMessage(self, user, message):
+        #Say, this string is actually in utf-8.
+        message = message.decode('utf-8')
         msg = "/private " + user + "\r\n" + message + u"\u0004"
-        msg = msg.encode('utf-8') 
-        self.transport.writeSomeData(msg)
+        utf8 = msg.encode('utf-8')
+
+        self.transport.writeSomeData(utf8)
 
 
 class ClientFac(protocol.ClientFactory):    
