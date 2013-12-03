@@ -54,10 +54,14 @@ class TISCapProtocol(protocol.Protocol):
         self.transport.writeSomeData("/users\r\n")
         
     def sendMessage(self, message):
-        self.transport.writeSomeData("/public\r\n" + message)
+        msg = "/public\r\n" + message + u"\u0004"
+        msg = msg.encode('utf-8') 
+        self.transport.writeSomeData(msg)
         
     def sendPrivateMessage(self, user, message):
-        self.transport.writeSomeData("/private " + user + "\r\n" + message)
+        msg = "/private " + user + "\r\n" + message + u"\u0004"
+        msg = msg.encode('utf-8') 
+        self.transport.writeSomeData(msg)
 
 
 class ClientFac(protocol.ClientFactory):    
@@ -118,7 +122,7 @@ class ClientFac(protocol.ClientFactory):
         #Remove the activeusers part.
         trimed = data[12:].strip()
         #Now remove the brackets,
-        trimed = trimed[1:-1]
+        #trimed = trimed[1:-1]
         
         users = trimed.split(",")
                 
