@@ -1,10 +1,13 @@
 #!/usr/bin/python
-from gi.repository import Gtk, GLib
+# -*- coding: utf-8 -*-
+
+from gi.repository import Gtk, GLib, Gdk
 #from communicator import CommThread, ClientCommand, ServerReply, Reciever, ClientFac
 from communicator import ClientFac
 import Queue
 import threading
 import string
+import random
 
 from twisted.internet import protocol, gtk3reactor
 gtk3reactor.install()
@@ -143,16 +146,31 @@ class TISCaPClient:
         txt = send_entry.get_text()
         send_entry.set_text("")
         send_btn.set_sensitive(False)
-        
-        print "Sending " + txt
-        
+                
         self.cf.instance.sendMessage(txt)
         
     def silly_char(self, btn):
-        pass
+        send_entry = self.builder.get_object("send_entry")
+        new_str = send_entry.get_text() + self.return_random_char()
+    
+        send_entry.set_text(new_str)
+        send_entry.emit("key-press-event", Gdk.Event())
     
     def return_random_char(self):
-        return 'K'
+        r = random.randrange(0, 5)
+        
+        if (r == 0):
+            return '⌨'
+        if (r == 1):
+            return '☏'
+        if (r == 2):
+            return 'ツ'
+        if (r == 3):
+            return '☢'
+        if (r == 4):
+            return '℃'
+        else:
+            return 'ツ'
         
     ####################################
     ## Switching Around Visible Views ##

@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 #Twisted is a lot. - Kyle
 #A great help with twisted:
 #http://krondo.com/blog/?p=1595
